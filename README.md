@@ -24,12 +24,7 @@ KHX-Publish-PyPI is an interactive command-line interface that simplifies the en
 
 ## 📸 Screenshots
 
-### Installation
-<!-- ![Installation Screenshot](screenshots/khx-publish-pypi_install.png) -->
-<!-- ![Installation Gif](screenshots/khx-publish-pypi_video_installation_version.gif) -->
-![Installation Gif](https://raw.githubusercontent.com/Khader-X/khx-publish-pypi/refs/heads/master/screenshots/khx-publish-pypi_video_installation_version.gif)
-
-
+<!-- 
 ### Interactive Publishing Workflow
 ![KHX-Publish-PyPI Demo](screenshots/...)
 
@@ -40,13 +35,21 @@ KHX-Publish-PyPI is an interactive command-line interface that simplifies the en
 *Available CLI commands and options*
 
 ![Pre-publish Checks](screenshots/pre-checks.png)
-*Automated validation of package structure and requirements*
+*Automated validation of package structure and requirements* -->
 
 ## 🛠️ Installation
 
 ### From PyPI (Recommended)
 ```bash
 pip install khx-publish-pypi
+```
+
+![Installation Gif](https://raw.githubusercontent.com/Khader-X/khx-publish-pypi/refs/heads/master/screenshots/khx-publish-pypi_video_installation_version.gif)
+
+
+Check the latest version:
+```bash
+khx-publish-pypi --version
 ```
 
 ### From GitHub (Release or main)
