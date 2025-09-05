@@ -57,7 +57,7 @@ jobs:
             dist/*
 
       - name: Publish to TestPyPI (manual)
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.repository == 'testpypi' && secrets.TEST_PYPI_API_TOKEN != '' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.repository == 'testpypi' }}
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
@@ -65,8 +65,8 @@ jobs:
           skip-existing: true
 
       - name: Publish to PyPI (release or manual)
-        if: ${{ ((github.event_name == 'release' && github.event.action == 'published') || (github.event_name == 'workflow_dispatch' && inputs.repository == 'pypi')) && secrets.PYPI_API_TOKEN != '' }}
+        if: ${{ (github.event_name == 'release' && github.event.action == 'published') || (github.event_name == 'workflow_dispatch' && github.event.inputs.repository == 'pypi') }}
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
+          password: ${{ secrets.PYPI_TOKEN }}
           skip-existing: true
