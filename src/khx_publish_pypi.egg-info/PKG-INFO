@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: khx_publish_pypi
-Version: 0.1.8
+Version: 0.1.9
 Summary: A friendly CLI tool to check and publish Python packages to TestPyPI/PyPI
 Author-email: ABUELTAYEF Khader <abueltayef.khader@gmail.com>
 Maintainer-email: ABUELTAYEF Khader <abueltayef.khader.main@hotmail.com>
@@ -59,7 +59,9 @@ KHX-Publish-PyPI is an interactive command-line interface that simplifies the en
 
 ### Installation
 <!-- ![Installation Screenshot](screenshots/khx-publish-pypi_install.png) -->
-![Installation Gif](screenshots/khx-publish-pypi_video_installation_version.gif)
+<!-- ![Installation Gif](screenshots/khx-publish-pypi_video_installation_version.gif) -->
+![Installation Gif](https://raw.githubusercontent.com/Khader-X/khx-publish-pypi/refs/heads/master/screenshots/khx-publish-pypi_video_installation_version.gif)
+
 
 ### Interactive Publishing Workflow
 ![KHX-Publish-PyPI Demo](screenshots/...)
@@ -79,6 +81,22 @@ KHX-Publish-PyPI is an interactive command-line interface that simplifies the en
 ```bash
 pip install khx-publish-pypi
 ```
+
+### From GitHub (Release or main)
+- Install from a tagged GitHub Release asset (requires download first):
+  - Go to Releases, download the `.whl` or `.tar.gz` from assets, then:
+    ```bash
+    pip install path/to/khx_publish_pypi-<version>-py3-none-any.whl
+    # or
+    pip install path/to/khx_publish_pypi-<version>.tar.gz
+    ```
+- Or install directly from the repo using pip’s VCS support:
+    ```bash
+    # specific tag
+    pip install git+https://github.com/Khader-X/khx-publish-pypi.git@vX.Y.Z#egg=khx_publish_pypi
+    # latest on default branch
+    pip install git+https://github.com/Khader-X/khx-publish-pypi.git@main#egg=khx_publish_pypi
+    ```
 
 ### From Source (Development)
 ```bash
