@@ -1,0 +1,6 @@
+{
+    "markdown.styles": [
+        ".vscode\\obsidian.css"
+    ],
+    "markdown.validate.enabled": true
+}
