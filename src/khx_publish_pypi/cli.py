@@ -792,5 +792,108 @@ def run(project_path: Path) -> None:
         display_package_urls(package_name, published_to)
 
 
+@main.command()
+@click.option(
+    "--path",
+    "project_path",
+    type=click.Path(path_type=Path),
+    default=Path.cwd(),
+    help="Project root containing pyproject.toml",
+)
+def auto_run(project_path: Path) -> None:
+    """🚀 Auto-run: automated publishing workflow - skips tokens, auto-patch version, auto-build, auto-publish to prod."""
+    print_banner()
+
+    # Checks first
+    results = run_prechecks(project_path)
+    print_report(results)
+    if not results["summary"]["ready"]:
+        console.print("❌ [red]Auto-run aborted: required files missing[/red]")
+        return
+
+    # Skip token setup - assume tokens are already configured
+    console.print(
+        "ℹ️ [blue]Skipping token setup (assuming tokens are configured)[/blue]"
+    )
+
+    # Auto-bump version to patch
+    console.print("📈 [yellow]Auto-bumping version (patch)...[/yellow]")
+    pyproject_path = project_path / "pyproject.toml"
+    data = read_pyproject_toml(pyproject_path)
+    if not data:
+        console.print("❌ [red]pyproject.toml not found or invalid[/red]")
+        return
+
+    tool = data.get("tool", {}) or {}
+    setuptools_cfg = tool.get("setuptools", {}) if isinstance(tool, dict) else {}
+    dynamic_cfg = (
+        setuptools_cfg.get("dynamic", {}) if isinstance(setuptools_cfg, dict) else {}
+    )
+    version_cfg = dynamic_cfg.get("version") if isinstance(dynamic_cfg, dict) else None
+    version_file_rel = (
+        version_cfg.get("file") if isinstance(version_cfg, dict) else None
+    )
+    version_attr = version_cfg.get("attr") if isinstance(version_cfg, dict) else None
+
+    if version_file_rel:
+        version_file = pyproject_path.parent / version_file_rel
+    elif isinstance(version_attr, str):
+        attr_path = version_attr.replace(":", ".")
+        module_path, _, _var = attr_path.rpartition(".")
+        if not module_path:
+            console.print("❌ [red]Invalid attr for dynamic version[/red]")
+            return
+        module_rel = Path("src") / Path(*module_path.split("."))
+        version_file = pyproject_path.parent / module_rel.with_suffix(".py")
+        version_file_rel = str(version_file.relative_to(pyproject_path.parent))
+    else:
+        console.print(
+            "❌ [red]Dynamic version source not configured (file/attr) in pyproject.toml[/red]"
+        )
+        return
+
+    current = read_version_from_python_file(version_file)
+    new_version = bump_version(current or "0.0.0", "patch")
+    if not new_version:
+        console.print("❌ [red]Cannot compute new version[/red]")
+        return
+
+    if write_version_to_python_file(version_file, new_version):
+        console.print(
+            f"✅ Bumped {current or '0.0.0'} → [bold]{new_version}[/bold] in {version_file_rel}"
+        )
+    else:
+        console.print("❌ [red]Failed to write new version[/red]")
+        return
+
+    # Auto-build
+    console.print("🔨 [yellow]Auto-building package...[/yellow]")
+    build_success = _run_build_flow(project_path, clean=True)
+    if not build_success:
+        console.print("❌ [red]Build failed. Cannot proceed to publishing.[/red]")
+        return
+
+    # Check if prod token is available
+    from .config import get_token
+
+    try:
+        get_token("pypi")
+    except ValueError:
+        console.print(
+            "❌ [red]PyPI token not configured. Run 'khx-publish-pypi setup-tokens' first.[/red]"
+        )
+        return
+
+    # Auto-publish to prod
+    console.print("🚀 [yellow]Auto-publishing to PyPI...[/yellow]")
+    success, package_name = publish_to_pypi(project_path, skip_build=True)
+    if success:
+        console.print("✅ [green]Successfully published to PyPI![/green]")
+        if package_name:
+            display_package_urls(package_name, ["pypi"])
+    else:
+        console.print("❌ [red]Failed to publish to PyPI[/red]")
+
+
 if __name__ == "__main__":
     main()
